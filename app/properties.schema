@@ -1,0 +1,119 @@
+{
+  "type" : "object",
+  "properties" : {
+    "description" : { "type" : "string" },
+    "instances_number" : {
+      "type" : "integer",
+      "minimum" : 0
+    },
+    "attributes_number" : {
+      "type" : "integer",
+      "minimum" : 0
+    },
+    "attributes" : {
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "name" : { "type" : "string" },
+          "type" : {
+            "enum" : [ "string", "number", "integer", "boolean", "enum", "pattern" ]
+          }
+        },
+        "required" : [ "name", "type" ],
+        "allOf" : [
+          {
+            "if" : {
+              "properties" : {
+                "type" : { "const" : "string" }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "enum" : [ "string" ] },
+                "maxLength" : { "type" : [ "integer", "null" ] }
+              },
+              "additionalProperties" : false
+            }
+          },
+          {
+            "if" : {
+              "properties" : {
+                "type" : { "const" : "number" }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "enum" : [ "number" ] },
+                "minimum" : { "type" : [ "number", "null" ] },
+                "maximum" : { "type" : [ "number", "null" ] }
+              },
+              "additionalProperties" : false
+            }
+          },
+          {
+            "if" : {
+              "properties" : {
+                "type" : { "const" : "integer" }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "enum" : [ "integer" ] },
+                "minimum" : { "type" : [ "integer", "null" ] },
+                "maximum" : { "type" : [ "integer", "null" ] }
+              },
+              "additionalProperties" : false
+            }
+          },
+          {
+            "if" : {
+              "properties" : {
+                "type" : { "const" : "pattern" }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "enum" : [ "pattern" ] },
+                "pattern" : { "type" : "string" }
+              },
+              "required" : [ "pattern" ],
+              "additionalProperties" : false
+            }
+          },
+          {
+            "if" : {
+              "properties" : {
+                "type" : { "const" : "enum" }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "enum" : [ "enum" ] },
+                "classes" : {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required" :  [ "classes" ],
+              "additionalProperties" : false
+            }
+          }
+        ]
+      }
+    },
+    "target" : { "type" : [ "string", "null" ] },
+    "missed" : { "type" : "string" },
+    "path" : { "type" : "string" }
+  },
+  "required" : [ "attributes", "missed", "path" ]
+  ,
+  "additionalProperties" : false
+}
