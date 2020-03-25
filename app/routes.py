@@ -18,6 +18,10 @@ def upload_form():
     return render_template('upload.html')
 
 @app.route('/estadisticas')
+def estadisticas():
+    attrs_schema = request.args['attrs_schema']
+    data = request.args['data']
+    return render_template('estadisticas.html', attrs_schema, data)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -47,7 +51,7 @@ def upload_file():
                     props.printErrors()
                     table = props.getTable()
                     print(table.data)
-                    return redirect('/estadisticas')
+                    return redirect('/estadisticas', attrs_schema = table.properties, data = table.data)
             else:
                 flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
                 return redirect(request.url)
