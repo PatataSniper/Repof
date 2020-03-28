@@ -66,7 +66,7 @@ class Properties:
             if (not error_num_attrs and len(instance) != len(self.attrs_schema)):
                 self.errorFlag = True
                 self.errorMessage.append("Attributes in properties file don't match the csv data")
-                self.attrs_schema = self.defaultSchema()
+                # self.attrs_schema = self.defaultSchema()
             for i in range(len(instance)):
                 type = self.props["attributes"][i]["type"]
                 schema = self.attrs_schema[i]
