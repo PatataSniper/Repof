@@ -3,7 +3,7 @@ from jsonschema import Draft7Validator as DraftValidator
 import app.utils
 import json
 import csv
-from app.table import Table
+from app.models.table import Table
 import re
 
 class Properties:

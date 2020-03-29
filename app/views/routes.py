@@ -3,8 +3,8 @@ import urllib.request
 from app import app
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
-from app.properties import Properties
-from app.table import Table
+from app.models.properties import Properties
+from app.models.table import Table
 
 ALLOWED_EXTENSIONS = set(['csv', 'json'])
 
