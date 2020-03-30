@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+  {% block head %}
+  {% endblock %}
+
+  {% block body %}
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-5">
+          {% include 'upload.html' %}
+        </div>
+        <div class="col-lg-5">
+          {% include 'table.html' %}
+        </div>
+      </div>
+    </div>
+
+  {% endblock %}

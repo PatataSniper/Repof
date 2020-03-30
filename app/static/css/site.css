@@ -1,4 +1,15 @@
-.body
-{
+body {
     font-family: Apple Chancery, cursive, Arial, Helvetica, sans-serif;
+}
+
+th, td {
+  padding: 5px;
+}
+
+.panel {
+  overflow: scroll;
+}
+
+input {
+  width: 100%;
 }

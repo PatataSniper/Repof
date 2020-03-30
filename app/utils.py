@@ -18,7 +18,5 @@ def levenshtein(s1, s2):
             dist[row][col] = min(dist[row-1][col] + 1,
                                  dist[row][col-1] + 1,
                                  dist[row-1][col-1] + cost)
-    for r in range(len(dist)):
-        print(dist[r])
 
     return dist[row][col]

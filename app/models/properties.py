@@ -23,8 +23,8 @@ class Properties:
             return
 
     def getJsonObject(self, path):
-        with open(path) as schema_file:
-            return json.load(schema_file)
+        with open(path) as file:
+            return json.load(file)
 
     def getCSVData(self, csvdata):
         with open(csvdata, newline="") as csvfile:
@@ -62,7 +62,11 @@ class Properties:
 
     def compareAttrsData(self):
         error_num_attrs = False
+        data = {
+            'data' : []
+        }
         for instance in self.data:
+            data['data'].append({})
             if (not error_num_attrs and len(instance) != len(self.attrs_schema)):
                 self.errorFlag = True
                 self.errorMessage.append("Attributes in properties file don't match the csv data")
@@ -73,45 +77,47 @@ class Properties:
                 json_data = { self.props["attributes"][i]["name"] : instance[i] }
                 errorMessage = "'"+instance[i]+"' is not of type "+type+" in attribute '"+self.props["attributes"][i]["name"]+"'"
                 if (self.findErrors(schema, json_data, errorMessage) == 0):
-                    if (type == "number"):
+                    if (instance[i] == "?"):
+                        instance[i] == None
+                    elif (type == "number"):
                         instance[i] = float(instance[i])
-                    if (type == "integer"):
+                    elif (type == "integer"):
                         instance[i] = int(instance[i])
-                    if (type == "boolean"):
+                    elif (type == "boolean"):
                         instance[i] = re.search("^\s*(1|T(rue|RUE)|true)\s*$", instance[i]) != None
+                data['data'][-1][self.props["attributes"][i]["name"]] = instance[i]
 
-        attrs = []
+        attrs = {
+            "type" : "object",
+            "properties" : {}
+        }
         intPattern = "^(\+|-)?[0-9]+$"
         floatPattern = "^(\+|-)?[0-9]*\.?[0-9]+([Ee](\+|-)?[0-9]*)?$"
         booleanPattern = "^\s*(1|0|T(rue|RUE)|true|F(alse|ALSE)|false)\s*$"
 
         for attr in self.propsAttr:
-            attrs.append({
-                "type" : "object",
-                "properties" : {
-                    attr["name"] : {}
-                }
-            })
+            attrs['properties'][attr["name"]] = {}
             type = attr["type"]
             if (type == "enum"):
-                attrs[-1]["properties"][attr["name"]]["enum"] = attr["classes"]
+                attrs["properties"][attr["name"]]["enum"] = attr["classes"]
             elif (type == "string"):
-                attrs[-1]["properties"][attr["name"]]["type"] = "string"
+                attrs["properties"][attr["name"]]["type"] = "string"
                 if ("maxLength" in attr and attr["maxLength"] != None and attr["maxLength"] != 0):
-                    attrs[-1]["properties"][attr["name"]]["maxLength"] = attr["maxLength"]
+                    attrs["properties"][attr["name"]]["maxLength"] = attr["maxLength"]
             if (type == "pattern"):
-                attrs[-1]["properties"][attr["name"]]["type"] = "string"
-                attrs[-1]["properties"][attr["name"]]["pattern"] = attr["pattern"]
+                attrs["properties"][attr["name"]]["type"] = "string"
+                attrs["properties"][attr["name"]]["pattern"] = attr["pattern"]
             elif (type == "integer" or type == "number"):
-                attrs[-1]["properties"][attr["name"]]["type"] = "integer" if type == "integer" else "number"
+                attrs["properties"][attr["name"]]["type"] = "integer" if type == "integer" else "number"
                 if ("minimum" in attr and attr["minimum"] != None):
-                    attrs[-1]["properties"][attr["name"]]["minimum"] = attr["minimum"]
+                    attrs["properties"][attr["name"]]["minimum"] = attr["minimum"]
                 if ("maximum" in attr and attr["maximum"] != None):
-                    attrs[-1]["properties"][attr["name"]]["maximum"] = attr["maximum"]
+                    attrs["properties"][attr["name"]]["maximum"] = attr["maximum"]
             elif (type == "boolean"):
-                attrs[-1]["properties"][attr["name"]]["type"] = "boolean"
+                attrs["properties"][attr["name"]]["type"] = "boolean"
 
-            self.attrs_schema = attrs
+        self.props["attributes"] = attrs
+        self.data = data
 
     def defaultSchema(self):
         pass
@@ -126,9 +132,10 @@ class Properties:
             self.errorMessage.append(errorMessage if errorMessage != None else error.message)
         return len(errors) != 0
 
-    def printErrors(self):
+    def Errors_Messages(self):
+        messages = ''
         for error in self.errorMessage:
-            print(error)
+            messages += error+'\n'
 
     def checkForErrors(self):
         if (len(self.errorMessage) != 0):

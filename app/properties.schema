@@ -110,6 +110,7 @@
       }
     },
     "target" : { "type" : [ "string", "null" ] },
+    "index" : { "type" : [ "string", "null" ] },
     "missed" : { "type" : "string" },
     "path" : { "type" : "string" }
   },
