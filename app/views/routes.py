@@ -82,12 +82,10 @@ if __name__ == "__main__":
 def atributo(nombre):
     if table != None:
         atr = next((x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
+        # Creamos un objeto de analisis univariable
+        analisis_uni = AnalisisUni(table, atr)
         # Pasamos los atributos como un diccionario a parte
         atributos = table.properties.props['attributes']
-        # Obtenemos los valores faltantes en la tabla cargada para el atributo actual
-        valores_faltantes = AnalisisUni.val_faltantes(table, atr)
-        longitud_faltantes = len(valores_faltantes)
-        return render_template('atributo.html', atr = atr, valores_faltantes = valores_faltantes
-        , longitud_faltantes = longitud_faltantes, atributos = atributos)
+        return render_template('atributo.html', analisis_uni = analisis_uni, atributos = atributos)
     else:
         return redirect(url_for('upload_form'))

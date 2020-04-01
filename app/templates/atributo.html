@@ -8,22 +8,46 @@
 {%block body%}
 
 <!--Información general del atributo-->
-<div id="atributo-seccion-principal" class="seccion-principal">
+<div id="atributo-seccion-principal" class="seccion-principal container">
     <h3>Información general</h3>
     <div class="row">
         <div class="col-md-3">
-            <span>{{atr['name']}} ({{atr['type']}})</span>
+            <span>{{analisis_uni.nombre}} ({{analisis_uni.tipo}})</span>
         </div>
     </div>
     <div class="row">        
         <div class="col-md-3">
-        Nombre: {{atr['name']}}</div></div>
+        <h4>Nombre:</h4> {{analisis_uni.nombre}}
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-3">
-            Tipo: {{atr['type']}}</div></div>
+            <h4>Tipo:</h4> {{analisis_uni.tipo}}
+        </div>
+    </div>
+        <!--Análsis univariable básico para atributos numéricos-->
+        <div class="row">
+            <div class="col-md-3">
+                <h4>Media:</h4> {{analisis_uni.media}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <h4>Mediana:</h4> {{analisis_uni.mediana}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <h4>Moda:</h4> {{analisis_uni.moda}}
+            </div>
+        </div>
+        <!--Análsis univariable básico para atributos numéricos-->
+    <!--Número de instancias con valores faltantes y su proporción con el total de instancias-->
+    <!--Lista de instancias con valores faltantes-->
     <h3>Valores faltantes</h3>
     <div id="valores_faltantes">
-        {%if longitud_faltantes > 0%}
+        {%if analisis_uni.cant_faltantes > 0%}
+        <h3>Numero de instancias faltantes: {{analisis_uni.cant_faltantes}} ({{analisis_uni.porc_faltantes}})</h3>
         <table class="table">
             <thead>
                 <!--Cabeceras de las columnas-->
@@ -36,7 +60,7 @@
             </thead>
             <tbody>
                 <!--Datos obtenidos del conjunto de datos-->
-                {% for reg in valores_faltantes%}
+                {% for reg in analisis_uni.faltantes%}
                     <tr>
                         {%for a in reg%}
                         <td>{{a}}</td>
@@ -52,16 +76,14 @@
         {%endif%}
     </div>
 </div>
-<!--Nombre-->
-<!--Tipo-->
-<!--Número de instancias con valores faltantes y su proporción con el total de instancias-->
-<!--Lista de instancias con valores faltantes-->
+
 <!--Lista de instancias que tienen valores fuera del dominio-->
 <!--Numero de instancias con valores fuera del dominio-->
 
 <!--Módulo de métricas de estadísticas univariables-->
 <!--Numéricos-->
     <!--Media-->
+
     <!--Mediana-->
     <!--Moda-->
     <!--Desviación estandar-->
