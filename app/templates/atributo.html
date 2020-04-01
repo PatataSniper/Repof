@@ -1,0 +1,73 @@
+<!--Esta vista mostrará información de análisis univariable para un atributo-->
+{% extends 'base.html' %}
+
+{%block head%}
+
+{%endblock%}
+
+{%block body%}
+
+<!--Información general del atributo-->
+<div id="atributo-seccion-principal" class="seccion-principal">
+    <h3>Información general</h3>
+    <div class="row">
+        <div class="col-md-3">
+            <span>{{atr['name']}} ({{atr['type']}})</span>
+        </div>
+    </div>
+    <div class="row">        
+        <div class="col-md-3">
+        Nombre: {{atr['name']}}</div></div>
+    <div class="row">
+        <div class="col-md-3">
+            Tipo: {{atr['type']}}</div></div>
+    <h3>Valores faltantes</h3>
+    <div id="valores_faltantes">
+        {%if longitud_faltantes > 0%}
+        <table class="table">
+            <thead>
+                <!--Cabeceras de las columnas-->
+                <tr>
+                    {% for a in atributos %}
+                            <th><span>{{a['name']}}</span></th>
+                    {% endfor %}
+                    <th><!--Posible botonera--></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--Datos obtenidos del conjunto de datos-->
+                {% for reg in valores_faltantes%}
+                    <tr>
+                        {%for a in reg%}
+                        <td>{{a}}</td>
+                        {%endfor%}
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        {%else%}
+        <div class="alert alert-info">
+            <span>No hay valores faltantes</span>
+        </div>
+        {%endif%}
+    </div>
+</div>
+<!--Nombre-->
+<!--Tipo-->
+<!--Número de instancias con valores faltantes y su proporción con el total de instancias-->
+<!--Lista de instancias con valores faltantes-->
+<!--Lista de instancias que tienen valores fuera del dominio-->
+<!--Numero de instancias con valores fuera del dominio-->
+
+<!--Módulo de métricas de estadísticas univariables-->
+<!--Numéricos-->
+    <!--Media-->
+    <!--Mediana-->
+    <!--Moda-->
+    <!--Desviación estandar-->
+    <!--BoxPlot-->
+
+<!--Categóricos-->
+    <!--Histográma-->
+
+{%endblock%}
