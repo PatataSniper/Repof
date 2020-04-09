@@ -6,10 +6,21 @@ th, td {
   padding: 5px;
 }
 
-.panel {
+.overflow {
   overflow: scroll;
 }
 
 input {
   width: 100%;
+}
+
+.panel {
+  margin: 5px;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.input {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

@@ -12,18 +12,26 @@
 </p>
 <form method="post" action="/upload" enctype="multipart/form-data">
     <div class="row">
-		<div class="col">
-			<h4>archivo csv <input class="form-control" type="file" name="csv" autocomplete="off" required></h4>
+			<div class="col-lg-8 col-lg-offset-1">
+				<div class="input">
+					<label for="csv"><h4>archivo csv</h4></label>
+					<input class="form-control" type="file" name="csv" autocomplete="off" required>
+				</div>
+			</div>
 		</div>
-	</div>
     <div class="row">
-		<div class="col">
-			<h4>archivo properties <input class="form-control" type="file" name="properties" autocomplete="off" required></h4>
+			<div class="col-lg-8 col-lg-offset-1">
+				<div class="input">
+					<label for="properties"><h4>archivo properties</h4></label>
+					<input class="form-control" type="file" name="properties" autocomplete="off" required></h4>
+				</div>
+			</div>
 		</div>
-	</div>
 	<div class="row">
-		<div class="col-lg-3">
-			<input class="form-control btn btn-primary" type="submit" value="Submit">
+		<div class="col-lg-3 col-lg-offset-1">
+			<div class="input">
+				<input class="form-control btn btn-primary" type="submit" value="Submit">
+			</div>
 		</div>
 	</div>
 </form>
