@@ -2,3 +2,12 @@
 {
     font-family: Apple Chancery, cursive, Arial, Helvetica, sans-serif;
 }
+
+.seccion-principal
+{
+    background-color: blanchedalmond;
+    border-radius: 5px;
+    border-width: 2px, 0px;
+    border-color: burlywood;
+    padding: 15px;
+}

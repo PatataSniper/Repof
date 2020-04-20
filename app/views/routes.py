@@ -13,6 +13,7 @@ import urllib
 ALLOWED_EXTENSIONS = set(['csv', 'json'])
 
 table = None
+analisis_uni = None
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -63,6 +64,31 @@ def upload_form():
         return render_template('upload.html')
     
 
+@app.route('/box_plot', methods=['POST'])
+def box_plot():
+    if analisis_uni:
+        if request.method == 'POST':
+            clase = request.form['clases']
+            # Obtenemos el atributo perteneciente a la clase proporcionada
+            atr_clase = next((x for x in analisis_uni.tabla.properties.props['attributes'] if x['name'] == clase), None)
+            if not atr_clase:
+                return redirect(url_for('estadisticas'))
+            analisis_uni.muestra_box_plot(atr_clase)
+            return redirect(url_for('atributo', nombre = analisis_uni.nombre))
+    else:
+        return redirect(url_for('upload_form'))
+
+
+@app.route('/istograma', methods=['POST'])
+def istograma():
+    if analisis_uni:
+        if request.method == 'POST':
+            analisis_uni.muestra_istograma()
+            return redirect(url_for('atributo', nombre = analisis_uni.nombre))
+    else:
+        return redirect(url_for('upload_form'))
+
+
 @app.route('/estadisticas')
 def estadisticas():
     if table != None:
@@ -81,6 +107,7 @@ if __name__ == "__main__":
 @app.route('/atributo/<string:nombre>', methods=['GET', 'POST'])
 def atributo(nombre):
     if table != None:
+        global analisis_uni
         atr = next((x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
         # Creamos un objeto de analisis univariable
         analisis_uni = AnalisisUni(table, atr)

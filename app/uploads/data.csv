@@ -7,12 +7,12 @@
 7,rainy,65,70,TRUE,no
 8,overcast,64,65,TRUE,yes
 9,,72,95,TRUE,no
-10,rainy,60,90,TRUE,yes
-11,overcast,69,,FALSE,yes
+10,rany,60,90,TRUE,yes
+11,overcast,69,,FASE,yes
 12,rainy,75,80,FALSE,
 13,overcast,10,80,TRUE,yes
 14,sunny,75,,TRUE,yes
-15,overcast,72,70,TRUE,yes
+15,overcost,72,70,TRUE,yes
 16,overcast,81,75,FALSE,yes
 17,overcast,58,20,FALSE,no
 18,rainy,73,75,,yes
