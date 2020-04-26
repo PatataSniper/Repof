@@ -4,10 +4,11 @@ import numpy as np
 from matplotlib.patches import Polygon
 from io import BytesIO
 import xml.etree.ElementTree as ET
+import copy
 
 class Analisis:
     def __init__(self, tabla):
-        self.tabla = tabla
+        self.tabla = copy.deepcopy(tabla)
         self.tipos_numericos = ("integer", "number", "float")
         self.tipos_categoricos = ("enum", "boolean", "categorical")
         self.tipos_clase = ("enum", "categorical")
@@ -31,7 +32,6 @@ class Analisis:
     def obtiene_index(self, atributo):
         temp = list(self.tabla.properties.props['attributes'])
         indice = 0
-        nombre_atr = atributo['name']
         for item in temp:
             if item['name'] == atributo['name']:
                 break
@@ -65,11 +65,25 @@ class AnalisisUni(Analisis):
         self.fuera_dominio = self.val_fuera_dominio()
         self.cant_fuera_dominio = len(self.fuera_dominio)
         self.porc_fuera_dominio = f'{round(self.cant_fuera_dominio * 100 / len(tabla.data), 2)}%'
+        # Tabla con valores depurados (sin faltantes ni fuera de domino)
+        self.tabla_dep = self.depura_tabla()
         # Estadísticas básicas
         self.media = self.obtiene_media()
         self.mediana = self.obtiene_mediana()
         self.moda = self.obtiene_moda()
         self.desviacion_estandar = self.obtiene_desviacion()
+
+
+    def depura_tabla(self):
+        # Eliminamos de la lista de registros los registros con valores vacíos
+        aux = list(self.tabla.data)
+        for vacio in self.faltantes:
+            aux.remove(vacio)
+        # Eliminamos de la lista los registros con valores fuera de dominio
+        for fuera in self.fuera_dominio:
+            if fuera in aux:
+                aux.remove(fuera)
+        return aux
 
 
     # Obtención de datos crudos, los devolveremos en una lista
@@ -90,8 +104,7 @@ class AnalisisUni(Analisis):
         etiquetas = []
         # Obtenemos el dominio de la clase especificada
         dominio_clase = self.obtiene_dominio(clase)
-        for reg in self.tabla.data:
-            valor = reg[self.indice]
+        for reg in self.tabla_dep:
             clase = reg[index_clase]
             # No incuiremos en el conjunto de datos los que tienen un valor de clase fuera del dominio
             if clase in dominio_clase:
@@ -116,29 +129,16 @@ class AnalisisUni(Analisis):
     # instancias por clase (solo válido para atributos categóricos)
     # los devolveremos en un diccionario o en una lista
     # dependiendo de lo que se necesite
-    def obtiene_datos_isto(self, regresa_tipo = 'lista'):
-        datos = {} # Número de datos para cada clase encontrada en el atributo
-        etiquetas = []
-        for reg in self.tabla.data:
+    def obtiene_datos_isto(self):
+        datos = [] # Número de datos para cada clase encontrada en el atributo
+        pos_val = 0
+        for reg in self.tabla_dep:
             clase = reg[self.indice]
-            # No incluiremos en el conjunto de datos lo que tienen un valor de clase fuera del dominio
             if clase in self.dominio:
                 if not clase in datos:
-                    datos[f'{clase}'] = 0 # Inicializamos la lista en el diccionario
-                    etiquetas.append(clase) # Agregamos la etiqueta nueva
-                datos[f'{clase}'] += 1 # Aumentamos el número de instancias para esta clase
-        if regresa_tipo == 'diccionario':
-            # La llamada espera un diccionario de números
-            return datos, etiquetas
-        elif regresa_tipo == 'lista':
-            # La llamada espera una lista de números
-            datos_lista = []
-            for entrada in datos.values():
-                datos_lista.append(entrada)
-            return datos_lista, etiquetas
-        # Cualquier valor para regresa_tipo no válido devolverá None
-        return None
-                    
+                    pos_val += 1
+                datos.append(clase)
+        return datos, pos_val
 
     
     def muestra_box_plot(self, clase):
@@ -162,54 +162,14 @@ class AnalisisUni(Analisis):
         # El istograma solamente podrá ser creado para atributos categóricos
         if (not self.atributo['type'] in self.tipos_categoricos):
             return None
-        plt.figure()
         # Código obtenido del siguiente enlace
-        # https://matplotlib.org/3.2.1/gallery/user_interfaces/svg_histogram_sgskip.html#sphx-glr-gallery-user-interfaces-svg-histogram-sgskip-py
-        datos, etiquetas = self.obtiene_datos_isto()
-        istograma = plt.hist(datos, label = etiquetas)
-        containers = istograma[-1]
-        leyenda = plt.legend(frameon = False)
-        plt.title("Desde un navegador, has clic en la leyenda\n"
-        "para activar el istograma correspondiente.")
+        # https://matplotlib.org/3.2.1/gallery/statistics/hist.html?highlight=isto
+        datos, pos_val = self.obtiene_datos_isto()
+        fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 
-        # Agregamos ids a los objetos svg's que vamos a modificar
-        hist_patches = {}
-        for ic, c in enumerate(containers):
-            hist_patches['hist_%d' % ic] = []
-            for il, element in enumerate(c):
-                element.set_gid('hist_%d_patch_%d' % (ic, il))
-                hist_patches['hist_%d' % ic].append('hist_%d_patch_%d' % (ic, il))
-
-        # Configuramos los ids para las leyendas
-        for i, t in enumerate(leyenda.get_patches()):
-            t.set_gid('leg_patch_%d' % i)
-
-        # Configuramos los ids para los textos
-        for i, t in enumerate(leyenda.get_texts()):
-            t.set_gid('leg_text_%d' % i)
-
-        # Guardamos la imagen svg en un archivo
-        f = BytesIO()
-        plt.savefig(f, format="svg")
-
-        # Create XML tree from the SVG file.
-        tree, xmlid = ET.XMLID(f.getvalue())
-
-
-        # --- Add interactivity ---
-
-        # Add attributes to the patch objects.
-        for i, t in enumerate(leyenda.get_patches()):
-            el = xmlid['leg_patch_%d' % i]
-            el.set('cursor', 'pointer')
-            el.set('onclick', "toggle_hist(this)")
-
-        # Add attributes to the text objects.
-        for i, t in enumerate(leyenda.get_texts()):
-            el = xmlid['leg_text_%d' % i]
-            el.set('cursor', 'pointer')
-            el.set('onclick', "toggle_hist(this)")
-        
+        # Podemos configurar el número de contenedores por medio del atributo 'bins'
+        axs.hist(datos, pos_val)
+        plt.show()
 
 
     def obtiene_media(self):
@@ -231,14 +191,10 @@ class AnalisisUni(Analisis):
         # La mediana solo la obtendremos para valores numéricos
         if( not self.atributo['type'] in str(self.tipos_numericos)):
             return None
-        # Necesitamos eliminar de la lista de registros los registros con valores vacíos
-        aux = self.tabla.data
-        for vacio in self.faltantes:
-            aux.remove(vacio)
         # Obtenemos el valor mínimo y máximo para el atributo dado
-        minimo = min(aux, key=lambda x: x[self.indice])
+        minimo = min(self.tabla_dep, key=lambda x: x[self.indice])
         minimo = minimo[self.indice]
-        maximo = max(aux, key=lambda x: x[self.indice])
+        maximo = max(self.tabla_dep, key=lambda x: x[self.indice])
         maximo = maximo[self.indice]
         return round((maximo + minimo) / 2, 2)
 
@@ -248,7 +204,7 @@ class AnalisisUni(Analisis):
         if(not self.atributo['type'] in str(self.tipos_numericos)):
             return None
         frecuencias = {}
-        for registro in self.tabla.data:
+        for registro in self.tabla_dep:
             if(registro[self.indice] not in frecuencias.keys()):
                 # Si el diccionario aún no tiene esta cantidad agregada la agregamos
                 frecuencias[f'{registro[self.indice]}'] = 0
@@ -262,7 +218,7 @@ class AnalisisUni(Analisis):
         if (not self.tipo in str(self.tipos_numericos)):
             return None
         res = 0
-        for reg in self.tabla.data:
+        for reg in self.tabla_dep:
             res += pow(reg[self.indice] - self.media, 2)
         # Dividimos la suma de las desviaciones entre el numero de instancias menos uno
         # (se trata de una muestra) y obtenemos raiz cuadrada
@@ -318,6 +274,12 @@ class AnalisisUni(Analisis):
 
 
 class AnalisisBi(Analisis):
-    def __init__(self, tabla):
+    def __init__(self, tabla, an1, an2):
         super().__init__(tabla)
+        self.analisis_1 = an1 # El objeto de analisis univariable uno
+        self.analisis_2 = an2 # El objeto de analisis univariable dos
     
+    def muestra_tabla_frecuencias():
+        # Asegurarnos que uno de los atributos recibidos sea la clase
+        # Utilizar la clase para discriminar las instancias
+        pass
