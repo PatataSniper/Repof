@@ -1,0 +1,14 @@
+body {
+    text-align: center;
+}
+
+table caption {
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+}
+
+table thead tr th {
+    text-transform: capitalize;
+    text-align: center;
+}

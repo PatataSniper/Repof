@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-5">
+        <table class="table">
+            <caption><h1>Data Set</h1></div></caption>
+            <thead>
+                <tr>
+                    {% for attribute in props['attributes'] %}
+                        {% for key, value in attribute.items() %}
+                            <th scope="col">
+                                <div>{{ key }}</div>
+                                <div>({{ value['type'] }})</div>
+                            </th>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for instance in props['data'] %}
+                    <tr>
+                        {% for value in instance %}
+                            <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-5">
+        <table class="table">
+            <caption>
+                <div><h1>Zero-R</h1></div>
+                <div><h2>Presición: {{'%0.2f'| format(acc|float)}}</h3></div>
+                <div><h3>{{ props['target'] }}</h3></div>
+            </caption>
+            <thead>
+                <tr>
+                    {% for class in classes %}
+                        <th>{{ class }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for freq in freqs %}
+                        <td>{{ freq }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+    "attributes" : [
+        { "compra" : { "type" : "ordinal" } },
+        { "mantenimiento" : { "type" : "ordinal" } },
+        { "puertas" : { "type" : "nominal" } },
+        { "personas" : { "type" : "nominal" } },
+        { "clase" : { "type" : "nominal" } }
+    ],
+    "target" : "clase",
+    "data" : []
+}
