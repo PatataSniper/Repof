@@ -1,0 +1,40 @@
+{
+  "description" : "Automóviles y su concordancia con las necesidades de las familias",
+  "instances_number" : 13,
+  "attributes_number" : 5,
+  "attributes" : [
+    {
+      "name" : "instancia",
+      "type" : "integer",
+      "minimum" : 0
+    },
+    {
+      "name" : "desempeño",
+      "type" : "enum",
+      "classes" : [ "vhigh", "med", "low" ]
+    },
+    {
+      "name" : "costo_mantenimiento",
+      "type" : "enum",
+      "classes": [ "vhigh", "med", "low" ]
+    },
+    {
+      "name" : "num_puertas",
+      "type" : "integer"
+      "minimum": 1
+    },
+    {
+      "name" : "num_personas",
+      "type" : "enum"
+      "classes": ["2", "4", "more"]
+    },
+    {
+      "name" : "concordancia",
+      "type" : "enum",
+      "classes" : [ "unacc", "acc", "good" ]
+    }
+  ],
+  "target" : "concordancia",
+  "missed" : "?",
+  "path" : "./Automoviles.csv"
+}

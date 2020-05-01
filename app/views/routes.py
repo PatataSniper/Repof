@@ -8,6 +8,8 @@ from app.models.table import Table
 from flask.helpers import url_for
 from app.models.analisis import AnalisisUni
 from app.models.analisis import AnalisisBi
+from app.models.analisis import Analisis
+from app.models.analisis import Tabla_frecuencias
 import urllib
 
 ALLOWED_EXTENSIONS = set(['csv', 'json'])
@@ -111,8 +113,12 @@ def atributo(nombre):
         atr = next((x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
         # Creamos un objeto de analisis univariable
         analisis_uni = AnalisisUni(table, atr)
+        analisis = Analisis(table) # Obtenemos el objeto Analisis (Global? PendientesSaul!!!)
+        clase = analisis.obtiene_atributo("jugar")
+        # Obtenemos la lista de Tablas de frecuencia
+        tbls_frec = Tabla_frecuencias.tablas_frecuencia(analisis, clase)
         # Pasamos los atributos como un diccionario a parte
         atributos = table.properties.props['attributes']
-        return render_template('atributo.html', analisis_uni = analisis_uni, atributos = atributos)
+        return render_template('atributo.html', analisis_uni = analisis_uni, atributos = atributos, tbls_frec = tbls_frec)
     else:
         return redirect(url_for('upload_form'))

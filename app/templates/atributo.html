@@ -153,6 +153,78 @@
         </div>
     </div>
     </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- Tablas de frecuencia y algoritmo one-R-->
+            <div id="one-r">
+                <h3>Algoritmo One-R</h3>
+                {%for tabla in tbls_frec%}
+                    <h4>{{tabla.atri['name']}}</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><!--Table header vació para dar espacio a columna de posibles valores para el atributo seleccionado--></th>
+                                {%for valor_cabecera in tabla.analisis_clase.dominio %}
+                                    <th><span>{{valor_cabecera}}</span></th>
+                                {%endfor%}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--Número de instancias por valores de clase-->
+                            {%for valor_cabecera in tabla.analisis_atri.dominio %}
+                                <tr>
+                                    <td>
+                                        {{valor_cabecera}}
+                                    </td>
+                                    {%for fila in tabla.tabla_frecuencias.values()%}
+                                        <td>
+                                            {{fila[valor_cabecera]}}
+                                        </td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                {%endfor%}
+                <h4>Reglas</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Atributo</th>
+                            <th>Reglas</th>
+                            <th>Errores</th>
+                            <th>Error total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for tabla in tbls_frec%}
+                            <tr>
+                                <td>
+                                    {{tabla.atri['name']}}
+                                </td>
+                                <td>
+                                    {%for registro in tabla.reglas[0]%}
+                                        {{registro}}
+                                        <br>
+                                    {%endfor%}
+                                </td>
+                                <td>
+                                    {%for registro in tabla.reglas[1]%}
+                                        {{registro}}
+                                        <br>
+                                    {%endfor%}
+                                </td>
+                                <td>
+                                    {{tabla.reglas[2]}}
+                                </td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--Módulo de métricas de estadísticas univariables-->
