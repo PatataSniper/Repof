@@ -15,8 +15,8 @@ class Analisis:
         self.tipos_numericos_itr = (type(int()), type(float()))
         self.tipos_categoricos_itr = (type(""),)
         self.atr_clase = self.obtiene_atr_clase()
-        self.tabla_dep = self.obtiene_tabla_dep() # Tabla depurada (sin registros con valores faltantes o fuera del dominio)
-        self.tabla_remp = self.obtiene_tabla_remp() # Tabla reemplazada (con los valores faltantes reemplazados)
+        # self.tabla_dep = self.obtiene_tabla_dep() # Tabla depurada (sin registros con valores faltantes o fuera del dominio)
+        # self.tabla_remp = self.obtiene_tabla_remp() # Tabla reemplazada (con los valores faltantes reemplazados)
 
 
     # Obtenemos los atributos categóricos que podríamos utilizar como clases
@@ -60,7 +60,7 @@ class Analisis:
         return None # No encontramos el atributo, devolvemos none
 
 
-    def obtiene_tabla_dep():
+    def obtiene_tabla_dep(self):
         pass
         
 
