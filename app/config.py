@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 
+# UPLOAD_FOLDER = 'C:\\Users\\Saul\\Documents\\Saúl documentos\\CUCEI\\9no Semestre\\Mineria_datos\\Proyecto_final\\Repof\\app\\uploads'
 ROOT_FOLDER = os.getcwd()
 print(ROOT_FOLDER)
 UPLOAD_FOLDER = '\\uploads\\'

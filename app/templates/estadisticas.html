@@ -1,10 +1,47 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
+{% extends 'base.html' %}
 
-  </body>
-</html>
+{%block head%}
+
+{%endblock%}
+
+{%block body%}
+
+<h2>Analisis estadístico</h2>
+<!--Desglozamos la información recibida-->
+<div id="conjunto_datos_info">
+    <div id="conjunto_datos_info_titulo">
+        <h4>Numero de atributos: {{numero_atributos}}</h4>
+        <h4>Numero de instancias: {{numero_instancias}}</h4>
+    </div>
+    <div id="conjunto_datos_info_tabla">
+        <table class="table">
+            <thead>
+                <!--Cabeceras de las columnas-->
+                <tr>
+                    {% for atr in atributos %}
+                            <th><a href="/atributo/{{atr['name']}}">{{atr['name']}} </a></th>
+                    {% endfor %}
+                    <th><!--Posible botonera--></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--Datos obtenidos del conjunto de datos-->
+                {% for registro in table.data%}
+                    <tr>
+                        {%for atr in registro%}
+                        <td>{{atr}}</td>
+                        {%endfor%}
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Sección de analisis de variables-->
+<div id="botonera_analisis">
+    <a href="">Análisis univariable</a>
+    <a href="">Análisis bivariable</a>
+</div>
+
+
+{%endblock%}

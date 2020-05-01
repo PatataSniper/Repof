@@ -1,0 +1,238 @@
+<!--Esta vista mostrará información de análisis univariable para un atributo-->
+{% extends 'base.html' %}
+
+{%block head%}
+
+{%endblock%}
+
+{%block body%}
+
+<!--Información general del atributo-->
+<div class="container">
+    <div id="atributo-seccion-principal" class="panel panel-default seccion-principal">
+        <div class="panel-body">
+            <h3>Información general</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <span>{{analisis_uni.nombre}} ({{analisis_uni.tipo}})</span>
+                </div>
+            </div>
+            <div class="row">        
+                <div class="col-md-3">
+                <h4>Nombre:</h4> {{analisis_uni.nombre}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>Tipo:</h4> {{analisis_uni.tipo}}
+                </div>
+            </div>
+            {%if analisis_uni.tipo in analisis_uni.tipos_numericos%}
+                <!--Análsis univariable básico para atributos numéricos-->
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4>Media:</h4> {{analisis_uni.media}}
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Mediana:</h4> {{analisis_uni.mediana}}
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Moda:</h4> {{analisis_uni.moda}}
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Desviacion estandar:</h4> {{analisis_uni.desviacion_estandar}}
+                    </div>
+                </div>
+                <form method="POST" action="/box_plot" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="submit" class="form-control" value="Obtener box plot">
+                            </input>
+                        </div>
+                            {%if analisis_uni.atr_clase != None%}
+                                {#Si tenemos atributos clase los desplegamos para la creación del box plot#}
+                                <div class="col-md-3">
+                                    <select name="clases" id="clases" class="form-control">
+                                        {%for clase in analisis_uni.atr_clase%}
+                                        <option value="{{clase['name']}}">{{clase['name']}}</option>
+                                        {%endfor%}
+                                    </select>
+                                </div>
+                            {%endif%}
+                    </div>
+                </form>
+            {%elif analisis_uni.tipo in analisis_uni.tipos_categoricos%}
+                <!--Análsis univariable básico para atributos categóricos-->
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4>Dominio:</h4> {{'' ~ analisis_uni.dominio}}
+                    </div>
+                </div>
+                <!-- Istográma, solo para atributos categóricos -->
+                <form method="POST" action="/istograma" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="submit" class="form-control" value="Obtener istograma">
+                            </input>
+                        </div>
+                    </div>
+                </form>
+            {%endif%}
+        </div>
+    </div>
+    <div id="atributo-seccion-secundaria" class="panel panel-default seccion-secundaria">
+        <!--Análsis univariable básico para atributos numéricos-->
+        <!--Número de instancias con valores faltantes y su proporción con el total de instancias-->
+        <!--Lista de instancias con valores faltantes-->
+        <div class="panel-body">
+            <h3>Valores faltantes</h3>
+            <div id="valores_faltantes">
+                {%if analisis_uni.cant_faltantes > 0%}
+                <h3>Numero de instancias faltantes: {{analisis_uni.cant_faltantes}} ({{analisis_uni.porc_faltantes}})</h3>
+                <table class="table">
+                    <thead>
+                        <!--Cabeceras de las columnas-->
+                        <tr>
+                            {% for a in atributos %}
+                                    <th><span>{{a['name']}}</span></th>
+                            {% endfor %}
+                            <th><!--Posible botonera--></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!--Datos obtenidos del conjunto de datos-->
+                        {% for reg in analisis_uni.faltantes%}
+                            <tr>
+                                {%for a in reg%}
+                                <td>{{a}}</td>
+                                {%endfor%}
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+                {%else%}
+                <div class="alert alert-info">
+                    <span>No hay valores faltantes</span>
+                </div>
+                {%endif%}
+            </div>
+    
+        <!--Lista de instancias que tienen valores fuera del dominio-->
+        <!--Numero de instancias con valores fuera del dominio-->
+        
+        <h3>Valores fuera del dominio</h3>
+        <div id="valores_fuera_dominio">
+            {%if analisis_uni.cant_fuera_dominio > 0%}
+            <h3>Numero de instancias con valores fuera del dominio: {{analisis_uni.cant_fuera_dominio}} ({{analisis_uni.porc_fuera_dominio}})</h3>
+            <table class="table">
+                <thead>
+                    <!--Cabeceras de las columnas-->
+                    <tr>
+                        {% for a in atributos %}
+                                <th><span>{{a['name']}}</span></th>
+                        {% endfor %}
+                        <th><!--Posible botonera--></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Datos obtenidos del conjunto de datos-->
+                    {% for reg in analisis_uni.fuera_dominio%}
+                        <tr>
+                            {%for a in reg%}
+                            <td>{{a}}</td>
+                            {%endfor%}
+                        </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+            {%else%}
+            <div class="alert alert-info">
+                <span>No hay valores fuera del dominio</span>
+            </div>
+            {%endif%}
+        </div>
+    </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- Tablas de frecuencia y algoritmo one-R-->
+            <div id="one-r">
+                <h3>Algoritmo One-R</h3>
+                {%for tabla in tbls_frec%}
+                    <h4>{{tabla.atri['name']}}</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><!--Table header vació para dar espacio a columna de posibles valores para el atributo seleccionado--></th>
+                                {%for valor_cabecera in tabla.analisis_clase.dominio %}
+                                    <th><span>{{valor_cabecera}}</span></th>
+                                {%endfor%}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--Número de instancias por valores de clase-->
+                            {%for valor_cabecera in tabla.analisis_atri.dominio %}
+                                <tr>
+                                    <td>
+                                        {{valor_cabecera}}
+                                    </td>
+                                    {%for fila in tabla.tabla_frecuencias.values()%}
+                                        <td>
+                                            {{fila[valor_cabecera]}}
+                                        </td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                {%endfor%}
+                <h4>Reglas</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Atributo</th>
+                            <th>Reglas</th>
+                            <th>Errores</th>
+                            <th>Error total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for tabla in tbls_frec%}
+                            <tr>
+                                <td>
+                                    {{tabla.atri['name']}}
+                                </td>
+                                <td>
+                                    {%for registro in tabla.reglas[0]%}
+                                        {{registro}}
+                                        <br>
+                                    {%endfor%}
+                                </td>
+                                <td>
+                                    {%for registro in tabla.reglas[1]%}
+                                        {{registro}}
+                                        <br>
+                                    {%endfor%}
+                                </td>
+                                <td>
+                                    {{tabla.reglas[2]}}
+                                </td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Módulo de métricas de estadísticas univariables-->
+<!--Numéricos-->
+    <!--Desviación estandar-->
+    <!--BoxPlot-->
+
+<!--Categóricos-->
+    <!--Histográma-->
+
+{%endblock%}

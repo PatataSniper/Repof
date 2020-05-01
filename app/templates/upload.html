@@ -1,3 +1,10 @@
+{% extends 'base.html' %}
+
+{% block head%}
+
+{% endblock%}
+
+{% block body %}
 <h2>Seleccione un archivo</h2>
 <p>
 	{% with messages = get_flashed_messages() %}
@@ -10,7 +17,7 @@
 	  {% endif %}
 	{% endwith %}
 </p>
-<form method="post" action="/upload" enctype="multipart/form-data">
+<form method="POST" action="/upload" enctype="multipart/form-data">
     <div class="row">
 			<div class="col-lg-8 col-lg-offset-1">
 				<div class="input">
@@ -35,3 +42,4 @@
 		</div>
 	</div>
 </form>
+{% endblock%}
