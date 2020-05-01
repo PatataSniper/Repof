@@ -1,0 +1,22 @@
+{% if data and schema %}
+<form action="/data" id="form_download" method="post">
+  <input type="hidden" name="properties" value="{{schema}}">
+
+  <<script type="text/javascript">
+    form = document.getElementById('form_download')
+    data = {{ data | tojson }}
+    data = data['data']
+    n = data.length
+
+    for (var i = 0; i < n; i++) {
+      elem = document.createElement('INPUT')
+      elem.type = 'hidden'
+      elem.name = 'csv['+i+']'
+      elem.value = JSON.stringify(data[i])
+      form.appendChild(elem)
+    }
+  </script>
+
+  <input type="submit">
+</form>
+{% endif %}

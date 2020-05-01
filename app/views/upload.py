@@ -9,6 +9,7 @@ ALLOWED_EXTENSIONS = set(['csv', 'json'])
 table = None
 HOME_ROUTE = app.config['HOME_ROUTE']
 UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
+ROOT_FOLDER = app.config['ROOT_FOLDER']
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ALLOWED_EXTENSIONS
@@ -18,6 +19,7 @@ def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         files_names = ['csv', 'properties']
+        files = app.config['FILES']
         cont = 0
         for name in files_names:
             if name not in request.files:
@@ -28,14 +30,14 @@ def upload_file():
                 flash('No file selected for uploading')
                 return redirect(HOME_ROUTE)
             if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                filename = files[files_names.index(name)]
+                file.save(os.path.join(ROOT_FOLDER + UPLOAD_FOLDER, filename))
                 flash('File successfully uploaded')
                 cont += 1
                 if (cont == len(files_names)):
                     schema = "app/properties.schema"
-                    props = "app/uploads/" + secure_filename(request.files['properties'].filename)
-                    csvdata = "app/uploads/" + secure_filename(request.files['csv'].filename)
+                    props = ROOT_FOLDER + UPLOAD_FOLDER + files[1]
+                    csvdata = ROOT_FOLDER + UPLOAD_FOLDER + files[0]
 
                     props = Properties(schema, props, csvdata)
                     if (props.checkForErrors()):
@@ -44,7 +46,6 @@ def upload_file():
                             flash('\t'+error)
                     session['data'] = props.data
                     session['schema'] = props.props
-                    print(props.props)
 
                     return redirect(HOME_ROUTE)
             else:

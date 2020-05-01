@@ -1,0 +1,48 @@
+{% if data %}
+<div class="overflow">
+  <script type="text/javascript">
+    data = {{ data | tojson }}
+    schema = {{ schema | tojson }}
+    console.log(data)
+    console.log(schema)
+  </script>
+
+  <table>
+    <thead>
+      <tr>
+        {% if 'index' in schema %}
+          {% for name in schema['attributes']['properties'].keys() %}
+            {% if name == schema['index'] %}
+              <th>{{ name }}</th>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% for name in schema['attributes']['properties'].keys() %}
+          {% if 'index' in schema and name != schema['index'] %}
+            <th>{{ name }}</th>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for instance in data['data'] %}
+        <tr>
+          {% if 'index' in schema %}
+            {% for name in schema['attributes']['properties'].keys() %}
+              {% if name == schema['index'] %}
+                <td>{{ instance[name] }}</td>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% for name in schema['attributes']['properties'].keys() %}
+            {% if 'index' in schema and name != schema['index'] %}
+              <td>{{ instance[name] }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endif %}
