@@ -23,7 +23,7 @@ def allowed_file(filename):
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_form():
     if request.method == 'POST':
-        # Checkamos si la petición tiene los elementos de carga de archivos
+        # Checamos si la petición tiene los elementos de carga de archivos
         files_names = ['csv', 'properties']
         cont = 0
         global table
@@ -113,10 +113,10 @@ def atributo(nombre):
         atr = next((x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
         # Creamos un objeto de analisis univariable
         analisis_uni = AnalisisUni(table, atr)
-        analisis = Analisis(table) # Obtenemos el objeto Analisis (Global? PendientesSaul!!!)
-        clase = analisis.obtiene_atributo("jugar")
+        # analisis = Analisis(table) # Obtenemos el objeto Analisis (Global? PendientesSaul!!!)
+        clase = analisis_uni.obtiene_atributo("jugar")
         # Obtenemos la lista de Tablas de frecuencia
-        tbls_frec = Tabla_frecuencias.tablas_frecuencia(analisis, clase)
+        tbls_frec = Tabla_frecuencias.tablas_frecuencia(analisis_uni, clase)
         # Pasamos los atributos como un diccionario a parte
         atributos = table.properties.props['attributes']
         return render_template('atributo.html', analisis_uni = analisis_uni, atributos = atributos, tbls_frec = tbls_frec)

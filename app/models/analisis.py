@@ -15,7 +15,7 @@ class Analisis:
         self.tipos_numericos_itr = (type(int()), type(float()))
         self.tipos_categoricos_itr = (type(""),)
         self.atr_clase = self.obtiene_atr_clase()
-        # self.tabla_dep = self.obtiene_tabla_dep() # Tabla depurada (sin registros con valores faltantes o fuera del dominio)
+        self.tabla_dep = self.obtiene_tabla_dep() # Tabla depurada (sin registros con valores faltantes o fuera del dominio)
         # self.tabla_remp = self.obtiene_tabla_remp() # Tabla reemplazada (con los valores faltantes reemplazados)
 
 
@@ -60,9 +60,33 @@ class Analisis:
         return None # No encontramos el atributo, devolvemos none
 
 
+    def val_fuera_dominio(self):
+        return None
+
+
+    def val_faltantes(self):
+        faltantes = []
+        for reg in self.tabla.data:
+            # Iteramos en cada uno de los registros del conjunto de datos
+            for indice in range(1, len(reg)):
+                if not reg[indice - 1]:
+                    # Si el dato está vacío agregamos todo el registro al arreglo de valores faltantes
+                    faltantes.append(reg)
+        return faltantes
+
+
     def obtiene_tabla_dep(self):
-        pass
-        
+        tabla_aux = copy.deepcopy(self.tabla)
+        eliminar = []
+        # Obtenemos todos los registros con valores fuera del dominio
+        fuera_dominio = self.val_faltantes()
+        # Obtenemos todos los registros con valores faltantes
+        # Concatenamos registros faltantes con registros fuera de dominio
+        eliminar = fuera_dominio
+        # Eliminamos dichos registros de la tabla y devolvemos dicha tabla
+        for registro in eliminar:
+            tabla_aux.remove(registro)
+        return tabla_aux
 
 
 class AnalisisUni(Analisis):
