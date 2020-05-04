@@ -3,14 +3,40 @@
     font-family: Apple Chancery, cursive, Arial, Helvetica, sans-serif;
 }
 
-.seccion-principal
-{
-    background-color: blanchedalmond;
-    border-radius: 5px;
-    border-width: 2px, 0px;
-    border-color: burlywood;
-    padding: 15px;
+/* Utilizaremos nuestros propios paneles, los cuales solo tienen bordes superior e inferior */
+.panel{
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 2px 0px;
+  padding: 15px;
 }
+
+.seccion-principal,
+.panel.seccion-principal
+{
+  background-color: blanchedalmond;
+  border-color: burlywood;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.seccion-secundaria,
+.panel.seccion-secundaria
+{
+  background-color: #dfecfc;
+  border-color: burlywood;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.seccion-secundaria .alert-info
+{
+  background-color: #cee3fd;
+  border-color: rgb(191, 195, 255);
+}
+
 th, td {
   padding: 5px;
 }
@@ -21,12 +47,6 @@ th, td {
 
 input {
   width: 100%;
-}
-
-.panel {
-  margin: 5px;
-  padding: 10px;
-  border: 1px solid black;
 }
 
 .input {
