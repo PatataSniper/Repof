@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{%block head%} {%endblock%}
+
+{%block body%}
+<div class="container">
+    <!--Mostramos las tablas de frecuencia-->
+    <div class="">
+        {% include 'tablas_frecuencia.html' %}
+    </div>
+
+    <!--Mostramos las tablas de verosimilitud-->
+    <div class="">
+        {% include 'tablas_verosimilitud.html' %}
+    </div>
+
+    <!--Mostramos la expresión utilizada para cada clase-->
+
+    <!--Mostramos los inputs para agregar una nueva instancia-->
+    <div class="">
+        {% include 'algoritmos_predictores/registro_propuesto.html' %}
+    </div>
+
+    {%if ejec%}
+    <!-- Si ya ejecutamos el algoritmo mostramos la clase sugerida para la instancia ingresada-->
+    <div class="panel seccion-principal">
+        <div class="row">
+            {%for key in conj_multiplos%}
+            <div class="col-md-12">
+                <h4>{{key}}</h4>
+                P({{key}}|A) = 
+                {%for mul in conj_multiplos[key]%}
+                    {{mul}} 
+                    {%if (conj_multiplos[key].index(mul) < conj_multiplos[key]|length - 1)%}
+                        x 
+                    {%endif%}
+                {%endfor%}
+                = {{probabilidades[key]}}
+            </div>
+            {%endfor%}
+        </div>
+        <div class="row">
+            {%if mas_probable%}
+            <div class="col-md-3"><h3>Clase predecida: {{mas_probable}}</h3></div>
+            {%endif%}
+        </div>
+    </div>
+    {%endif%}
+</div>
+{%endblock%}

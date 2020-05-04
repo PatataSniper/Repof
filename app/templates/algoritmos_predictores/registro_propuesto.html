@@ -1,0 +1,32 @@
+<form method="POST" action="/naive_bayes" enctype="multipart/form-data">
+    <div id="registro_prupuesto" class="panel seccion_secundaria">
+        <div class="row">
+            {%for atri in naive.atr_clase%}
+            {%if atri['name'] != naive.nombre_clase%}
+            <div class="col-md-3">
+                <label for="reng_prop_{{atri['name']}}">{{atri['name']}}</label>
+                {%if ejec%}
+                <input name="reng_prop_{{atri['name']}}" placeholder="Escriba un valor para {{atri['name']}}"
+                    class="form-control" value="{{registro[atri['name']]}}">
+                {%else%}
+                <input name="reng_prop_{{atri['name']}}" placeholder="Escriba un valor para {{atri['name']}}"
+                    class="form-control">
+                {%endif%}
+            </div>
+            {%else%}
+            <div class="col-md-3">
+                <label for="reng_prop_{{atri['name']}}">{{atri['name']}}</label>
+                {%if ejec%}
+                <input name="reng_prop_{{atri['name']}}" class="readonly form-control" value="{{mas_probable}}">
+                {%else%}
+                <input name="reng_prop_{{atri['name']}}" class="readonly form-control">
+                {%endif%}
+            </div>
+            {%endif%}
+            {%endfor%}
+            <div class="col-md-3">
+                <input type="submit" value="Aceptar" class="btn btn-success">
+            </div>
+        </div>
+    </div>
+</form>

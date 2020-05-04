@@ -9,7 +9,9 @@ from flask.helpers import url_for
 from app.models.analisis import AnalisisUni
 from app.models.analisis import AnalisisBi
 from app.models.analisis import Analisis
-from app.models.analisis import Tabla_frecuencias
+from app.models.tablas_analisis.tabla_frecuencia import Tabla_frecuencia
+from app.models.tablas_analisis.tabla_verosimilitud import Tabla_verosimilitud
+from app.models.algoritmos_predictores.naive_bayes import Naive_bayes
 import urllib
 
 ALLOWED_EXTENSIONS = set(['csv', 'json'])
@@ -17,8 +19,14 @@ ALLOWED_EXTENSIONS = set(['csv', 'json'])
 table = None
 analisis_uni = None
 
+
+if __name__ == "__main__":
+    app.run()
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_form():
@@ -52,11 +60,11 @@ def upload_form():
                     # Cargamos un objeto properties, el cual almacenará la funcionalidad del proceso de
                     # análisis de datos
                     props = Properties(schema, props, csvdata)
-                    props.printErrors() # Mostramos errores de cargado en caso de existir
+                    props.printErrors()  # Mostramos errores de cargado en caso de existir
                     # El objeto Properties se encargará de analizar el archivo csv
                     # y devolver la información obtenida en formato de tabla
-                    table = props.getTable() 
-                    print(table.data) 
+                    table = props.getTable()
+                    print(table.data)
                     return redirect(url_for('estadisticas'))
             else:
                 flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
@@ -64,7 +72,7 @@ def upload_form():
     else:
         # El metodo recibido es GET o cualquier otro
         return render_template('upload.html')
-    
+
 
 @app.route('/box_plot', methods=['POST'])
 def box_plot():
@@ -72,11 +80,12 @@ def box_plot():
         if request.method == 'POST':
             clase = request.form['clases']
             # Obtenemos el atributo perteneciente a la clase proporcionada
-            atr_clase = next((x for x in analisis_uni.tabla.properties.props['attributes'] if x['name'] == clase), None)
+            atr_clase = next(
+                (x for x in analisis_uni.tabla.properties.props['attributes'] if x['name'] == clase), None)
             if not atr_clase:
                 return redirect(url_for('estadisticas'))
             analisis_uni.muestra_box_plot(atr_clase)
-            return redirect(url_for('atributo', nombre = analisis_uni.nombre))
+            return redirect(url_for('atributo', nombre=analisis_uni.nombre))
     else:
         return redirect(url_for('upload_form'))
 
@@ -86,7 +95,7 @@ def istograma():
     if analisis_uni:
         if request.method == 'POST':
             analisis_uni.muestra_istograma()
-            return redirect(url_for('atributo', nombre = analisis_uni.nombre))
+            return redirect(url_for('atributo', nombre=analisis_uni.nombre))
     else:
         return redirect(url_for('upload_form'))
 
@@ -97,28 +106,55 @@ def estadisticas():
         numero_atributos = table.properties.props['attributes_number']
         numero_instancias = len(table.data)
         atributos = table.properties.props['attributes']
-        return render_template('estadisticas.html', table = table, numero_atributos = numero_atributos,
-        numero_instancias = numero_instancias, atributos = atributos)
+        return render_template('estadisticas.html', table=table, numero_atributos=numero_atributos,
+                               numero_instancias=numero_instancias, atributos=atributos)
     return redirect(url_for('upload_form'))
-    
-
-if __name__ == "__main__":
-    app.run()
 
 
 @app.route('/atributo/<string:nombre>', methods=['GET', 'POST'])
 def atributo(nombre):
     if table != None:
         global analisis_uni
-        atr = next((x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
+        atr = next(
+            (x for x in table.properties.props['attributes'] if x['name'] == nombre), None)
+        clase = "jugar"  # No es código dinámico, calcular de manera dinámica. PendientesSaul!!!
         # Creamos un objeto de analisis univariable
-        analisis_uni = AnalisisUni(table, atr)
-        # analisis = Analisis(table) # Obtenemos el objeto Analisis (Global? PendientesSaul!!!)
-        clase = analisis_uni.obtiene_atributo("jugar")
+        analisis_uni = AnalisisUni(table, atr, clase)
         # Obtenemos la lista de Tablas de frecuencia
-        tbls_frec = Tabla_frecuencias.tablas_frecuencia(analisis_uni, clase)
+        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis_uni, clase)
         # Pasamos los atributos como un diccionario a parte
         atributos = table.properties.props['attributes']
-        return render_template('atributo.html', analisis_uni = analisis_uni, atributos = atributos, tbls_frec = tbls_frec)
+        return render_template('atributo.html', analisis_uni=analisis_uni, atributos=atributos, tbls_frec=tbls_frec)
+    else:
+        return redirect(url_for('upload_form'))
+
+
+@app.route('/naive_bayes', methods=['GET', 'POST'])
+def naive_bayes():
+    if table != None:
+        clase = "jugar"  # No es código dinámico, calcular de manera dinámica. PendientesSaul!!!
+        analisis = Analisis(table, clase)
+        # Creamos un objeto naive_bayes
+        tbls_vero = Tabla_verosimilitud.tablas_verosimilitud(analisis, clase)
+        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis, clase)
+        naive = Naive_bayes(table, clase, tbls_vero)
+        if request.method == 'POST':
+            # El usuario ya envió el registro propuesto para realizar la clasificación
+            registro = {}
+            prefijo = "reng_prop_" # El prefijo para los imputs del template 'registro_propuesto'
+            for atr in analisis.atr_clase:
+                nombre = atr['name']
+                if nombre != analisis.nombre_clase:
+                    valor = request.form[f'{prefijo}{nombre}']
+                    if valor:
+                        # La clase no la obtendremos en los datos ya que es el valor que intentamos predecir
+                        registro[nombre] = valor
+            # Ejecutamos el algorimo naive_bayes
+            probabilidades, conj_multiplos, mas_probable = naive.ejecuta(registro)
+            return render_template('algoritmos_predictores/naive_bayes.html', tbls_frec=tbls_frec, tbls_vero=tbls_vero, naive=naive,
+             probabilidades = probabilidades, conj_multiplos = conj_multiplos, mas_probable = mas_probable, ejec = True, registro = registro)
+        else:
+            return render_template('algoritmos_predictores/naive_bayes.html', tbls_frec=tbls_frec, tbls_vero=tbls_vero, naive=naive, ejec = False)
+        
     else:
         return redirect(url_for('upload_form'))

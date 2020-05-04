@@ -1,0 +1,35 @@
+<div id="tablas_verosimilitud" class="seccion-secundaria">
+    <h4>Tablas de verosimilitud</h4>
+    <div class="row">
+        {%for tabla in tbls_vero.values()%}
+            <div class="col-md-6">
+                <h4>{{tabla.atri['name']}}</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><!--Table header vacío para dar espacio a columna de posibles valores para el atributo seleccionado--></th>
+                            {%for valor_cabecera in tabla.tabla_vero %}
+                                <th><span>{{valor_cabecera}}</span></th>
+                            {%endfor%}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!--Número de instancias por valores de clase-->
+                        {%for valor_cabecera in tabla.analisis_atri.dominio %}
+                            <tr>
+                                <td>
+                                    {{valor_cabecera}}
+                                </td>
+                                {%for fila in tabla.tabla_vero_show.values()%}
+                                    <td>
+                                        {{fila[valor_cabecera]}}
+                                    </td>
+                                {%endfor%}
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        {%endfor%}
+    </div>
+</div>
