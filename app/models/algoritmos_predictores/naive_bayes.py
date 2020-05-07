@@ -1,12 +1,15 @@
 import app.models.analisis as anal
 import copy
+import app.utils as utils
 
 
 class Naive_bayes(anal.Analisis):
-    def __init__(self, tabla, clase, tbls_vero):
+    def __init__(self, tabla, clase, tbls_vero, estado = "Numérico"):
         super().__init__(tabla, clase)
+        self.estado = estado # El estado de este algoritmo (numérico, categórico)
         # Clasificaremos los registros dependiendo de la clase
-        self.por_clase = self.reg_por_clase() # Obtendremos los registros de la tabala separados por clase
+        self.por_clase = self.reg_por_clase() # Obtendremos los registros de la tabla separados por clase
+        self.resu_est_por_clase = self.obt_resu_por_clase() # Obtenemos el resumen estadístico para cada atribuo dividido por valor de clase
         self.tablas_vero = tbls_vero #Las tablas de verosimilitud para el conjunto de datos (atributos categóricos)
         # self.conj_analisis = self.analiza_atrib() # Creamos un analisis univariable para cada atributo en la tabla
         self.imprime_info() # Imprimimos en consola para hacer pruebas
@@ -60,16 +63,21 @@ class Naive_bayes(anal.Analisis):
             for renglon in self.por_clase[llave_clase]:
                 print(renglon)
         print('Medias y desviaciones estandar para atributos numéricos')
-        # for datos in self.conj_analisis:
-        #     print(datos) # (media, desviación estandar)
+        for datos in self.resu_est_por_clase:
+            print(datos) # (media, desviación estandar)
 
 
-    # def analiza_atrib(self):
-    #     resumen_estadistico = []
-    #     for atri in self.atributos:
-    #         # Creamos el objeto de anlisis para cada atributo
-    #         analisis = anal.AnalisisUni(self.tabla, atri, self.nombre_clase)
-    #         if analisis.tipo in self.tipos_numericos and analisis.nombre != self.nombre_clase:
-    #             # Solamente obtendremos la media y la desviación estandar para los tipos numéricos que no sean la propia clase
-    #             resumen_estadistico.append((analisis.media, analisis.desviacion_estandar))
-    #     return resumen_estadistico
+    def recopila_dataset(self, dataset):
+        # Devolveremos un diccionario de tuplas con la sig. info. (media, desviación estandar) Para un conjunto de datos dado
+        # Será necesario que el dataset solamente contenga atributos numéricos
+        estadisiticas = [(utils.media(columna), utils.desviacion_est(columna), len(columna)) for columna in zip(*dataset)]
+        del(estadisiticas[-1]) # Eliminamos el último elemento el cual se considera la clase. Hacer dinámico PendientesSaul!!!
+        return estadisiticas
+
+
+    def obt_resu_por_clase(self):
+        resumen_estadistico = {}
+        data = self.por_clase # La tabla de registros separados por clase
+        for valor_clase, registros in data.items():
+            resumen_estadistico[valor_clase] = self.recopila_dataset(registros)
+        return resumen_estadistico

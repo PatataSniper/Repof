@@ -8,17 +8,20 @@ from io import BytesIO
 from app.models.table import Table
 
 class Analisis:
-    def __init__(self, tabla: Table, clase):
+    def __init__(self, tabla: Table, clase = None):
         self.tabla = copy.deepcopy(tabla)
-        self.nombre_clase = clase
-        self.clase = self.obtiene_atributo(clase) # La clase para este conjunto de datos (puede cambiar a petición del usuario)
-        self.index_clase = self.obtiene_index(self.clase)
         self.tipos_numericos = ("integer", "number", "float")
         self.tipos_categoricos = ("enum", "boolean", "categorical")
         self.tipos_clase = ("enum", "categorical", "boolean")
         self.tipos_numericos_itr = (type(int()), type(float()))
         self.tipos_categoricos_itr = (type(""),)
         self.atr_clase = self.obtiene_atr_clase() # Obtenemos los atributos categóricos que podíamos utilizar como clases
+        if not clase:
+            # Si no se especifica la clase utilizaremos el ultimo atributo categórico encontrado en la tabla
+            clase = self.atr_clase[-1]['name']
+        self.nombre_clase = clase
+        self.clase = self.obtiene_atributo(clase) # La clase para este conjunto de datos (puede cambiar a petición del usuario)
+        self.index_clase = self.obtiene_index(self.clase)
         self.atributos = self.tabla.properties.props['attributes']
         # self.tabla_dep_tot = self.obtiene_tabla_dep() # Tabla depurada en su totalidad 
         # (sin registros con valores faltantes o fuera del dominio para ningún atributo de la tabla)
@@ -97,7 +100,7 @@ class Analisis:
 
 
 class AnalisisUni(Analisis):
-    def __init__(self, tabla, atributo, clase):
+    def __init__(self, tabla, atributo, clase = None):
         super().__init__(tabla, clase)
         # Información atributo a analizar del conjunto de datos
         self.atributo = atributo
@@ -271,7 +274,7 @@ class AnalisisUni(Analisis):
             res += pow(reg[self.indice] - self.media, 2)
         # Dividimos la suma de las desviaciones entre el numero de instancias menos uno
         # (se trata de una muestra) y obtenemos raiz cuadrada
-        res = res / len(self.tabla.data) - 1
+        res = res / (len(self.tabla.data) - 1)
         res = sqrt(res)
         return round(res, 2)
 
@@ -323,7 +326,7 @@ class AnalisisUni(Analisis):
 
 
 class AnalisisBi(Analisis):
-    def __init__(self, tabla, an1, an2, clase):
+    def __init__(self, tabla, an1, an2, clase = None):
         super().__init__(tabla, clase)
         self.analisis_1 = an1 # El objeto de analisis univariable uno
         self.analisis_2 = an2 # El objeto de analisis univariable dos

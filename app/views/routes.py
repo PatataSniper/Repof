@@ -35,6 +35,7 @@ def upload_form():
         files_names = ['csv', 'properties']
         cont = 0
         global table
+        rutas = [] # Las rutas para los archivos recién subidos
         for name in files_names:
             if name not in request.files:
                 flash('No file part')
@@ -47,16 +48,17 @@ def upload_form():
             if file and allowed_file(file.filename):
                 # Nos aseguramos que el archivo recibido tenga un nombre válido
                 filename = secure_filename(file.filename)
+                rutas.append(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 flash('Éxito al subir el archivo')
                 cont += 1
-                if (cont == len(files_names)):
+                if (cont == len(files_names) and len(rutas) >= 2):
                     # Una vez cargados todos los archivos redireccionamos a la vista de estadisticas
                     # Cargamos las direcciones para los archivos recien subidos
                     # Hacer las rutas dinámicas. PendientesSaul!!!
                     schema = "app/properties.schema"
-                    props = "app/uploads/properties.json"
-                    csvdata = "app/uploads/data.csv"
+                    csvdata = rutas[0]
+                    props = rutas[1]
                     # Cargamos un objeto properties, el cual almacenará la funcionalidad del proceso de
                     # análisis de datos
                     props = Properties(schema, props, csvdata)
@@ -121,7 +123,7 @@ def atributo(nombre):
         # Creamos un objeto de analisis univariable
         analisis_uni = AnalisisUni(table, atr, clase)
         # Obtenemos la lista de Tablas de frecuencia
-        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis_uni, clase)
+        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis_uni)
         # Pasamos los atributos como un diccionario a parte
         atributos = table.properties.props['attributes']
         return render_template('atributo.html', analisis_uni=analisis_uni, atributos=atributos, tbls_frec=tbls_frec)
@@ -132,12 +134,11 @@ def atributo(nombre):
 @app.route('/naive_bayes', methods=['GET', 'POST'])
 def naive_bayes():
     if table != None:
-        clase = "jugar"  # No es código dinámico, calcular de manera dinámica. PendientesSaul!!!
-        analisis = Analisis(table, clase)
+        analisis = Analisis(table)
         # Creamos un objeto naive_bayes
-        tbls_vero = Tabla_verosimilitud.tablas_verosimilitud(analisis, clase)
-        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis, clase)
-        naive = Naive_bayes(table, clase, tbls_vero)
+        tbls_vero = Tabla_verosimilitud.tablas_verosimilitud(analisis)
+        tbls_frec = Tabla_frecuencia.tablas_frecuencia(analisis)
+        naive = Naive_bayes(table, analisis.nombre_clase, tbls_vero)
         if request.method == 'POST':
             # El usuario ya envió el registro propuesto para realizar la clasificación
             registro = {}

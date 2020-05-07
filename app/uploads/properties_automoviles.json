@@ -20,12 +20,12 @@
     },
     {
       "name" : "num_puertas",
-      "type" : "integer"
+      "type" : "integer",
       "minimum": 1
     },
     {
       "name" : "num_personas",
-      "type" : "enum"
+      "type" : "enum",
       "classes": ["2", "4", "more"]
     },
     {

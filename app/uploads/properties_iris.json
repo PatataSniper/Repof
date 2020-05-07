@@ -1,0 +1,40 @@
+{
+  "description" : "Conjunto de datos Iris",
+  "instances_number" : 150,
+  "attributes_number" : 5,
+  "attributes" : [
+    {
+      "name" : "instancia",
+      "type" : "integer",
+      "minimum" : 0
+    },
+    {
+      "name": "Longitud petalo",
+      "type": "number",
+      "minimum": 0
+    },
+    {
+      "name": "Amplitud petalo",
+      "type": "number",
+      "minimum": 0
+    },
+    {
+      "name": "Longitud sepalo",
+      "type": "number",
+      "minimum": 0
+    },
+    {
+      "name": "Amplitud sepalo",
+      "type": "number",
+      "minimum": 0
+    },
+    {
+      "name" : "Iris",
+      "type" : "enum",
+      "classes": [ "Iris-setosa", "Iris-versicolor", "Iris-virginica" ]
+    }
+  ],
+  "target" : "Iris",
+  "missed" : "?",
+  "path" : "./data.csv"
+}

@@ -1,3 +1,5 @@
+from math import sqrt
+
 def levenshtein(s1, s2):
     rows = len(s1)+1
     cols = len(s2)+1
@@ -22,3 +24,14 @@ def levenshtein(s1, s2):
         print(dist[r])
 
     return dist[row][col]
+
+
+#Calcula la media de los número recibidos
+def media(numeros):
+    return sum(numeros)/float(len(numeros))
+
+
+def desviacion_est(numeros):
+    med = media(numeros)
+    varianza = sum([(x-med)**2 for x in numeros]) / float(len(numeros)-1) # Menos uno porque trabajamos con muestras no con universos
+    return sqrt(varianza)

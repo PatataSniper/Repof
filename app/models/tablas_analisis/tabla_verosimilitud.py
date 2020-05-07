@@ -4,7 +4,7 @@ from app.models.tablas_analisis.tabla_analisis import Tabla_analisis
 from app.models.table import Table
 
 class Tabla_verosimilitud(Tabla_analisis):
-    def __init__(self, tabla, clase, atri):
+    def __init__(self, tabla, atri, clase = None):
         super().__init__(tabla, clase, atri)
         self.tabla_vero, self.tabla_vero_show = self.obt_tbl_vero()
         self.tabla_vero_inv = self.inv_tbl_vero() # Se invierte la tabla de verosimilitud (atributo pasa a las columnas y clase a los renglones) para
@@ -64,7 +64,7 @@ class Tabla_verosimilitud(Tabla_analisis):
 
 
     @staticmethod
-    def tablas_verosimilitud(analisis: anal.Analisis, clase):
+    def tablas_verosimilitud(analisis: anal.Analisis):
         if type(analisis.tabla) is Table:
             # Si el objeto analisis ya ha cargado la tabla de manera exitosa seguimos con el procedimiento
             tbls_vero = {}
@@ -72,8 +72,8 @@ class Tabla_verosimilitud(Tabla_analisis):
             atributos.remove(analisis.clase) # Eliminamos la clase de la lista de atributos para evitar que itere sobre si misma
             # Crearemos una tabla de frecuencia por cada atributo categórico en la tabla
             for atri in atributos:
-                analisis_atri = anal.AnalisisUni(analisis.tabla, atri, clase)
-                tbl = Tabla_verosimilitud(analisis_atri.tabla, clase, atri)
+                analisis_atri = anal.AnalisisUni(analisis.tabla, atri)
+                tbl = Tabla_verosimilitud(analisis_atri.tabla, atri)
                 if tbl.tabla_vero:
                     # Si podemos obtener una tabla de frecuencia entre el atributo y la clase la agregamos a la lista de tablas
                     tbls_vero[analisis_atri.nombre] = tbl

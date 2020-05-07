@@ -3,7 +3,7 @@ from app.models.tablas_analisis.tabla_analisis import Tabla_analisis
 from app.models.table import Table
 
 class Tabla_frecuencia(Tabla_analisis):
-    def __init__(self, tabla, clase, atri):
+    def __init__(self, tabla, atri, clase = None):
         super().__init__(tabla, clase, atri)
         self.tabla_frecuencia = self.obtiene_tabla_frecuencia()
         self.tabla_frecuencia_inv = self.inv_tabla_frec()
@@ -139,7 +139,7 @@ class Tabla_frecuencia(Tabla_analisis):
 
     
     @staticmethod
-    def tablas_frecuencia(analisis: anal.Analisis, clase):
+    def tablas_frecuencia(analisis: anal.Analisis):
         if type(analisis.tabla) is Table:
             # Si el objeto analisis ya ha cargado la tabla de manera exitosa seguimos con el procedimiento
             tbls_frec = []
@@ -149,8 +149,8 @@ class Tabla_frecuencia(Tabla_analisis):
             atributos.remove(analisis.clase) # Eliminamos la clase de la lista de atributos para evitar que itere sobre si misma
             # Crearemos una tabla de frecuencia por cada atributo categórico en la tabla
             for atri in atributos:
-                analisis_atri = anal.AnalisisUni(analisis.tabla, atri, clase)
-                tbl = Tabla_frecuencia(analisis_atri.tabla, clase, atri)
+                analisis_atri = anal.AnalisisUni(analisis.tabla, atri)
+                tbl = Tabla_frecuencia(analisis_atri.tabla, atri)
                 if tbl.tabla_frecuencia:
                     # Si podemos obtener una tabla de frecuencia entre el atributo y la clase la agregamos a la lista de tablas
                     tbls_frec.append(tbl)

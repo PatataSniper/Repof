@@ -1,0 +1,15 @@
+__pycache__/microblog.cpython-38.pyc
+app/__pycache__/__init__.cpython-38.pyc
+app/__pycache__/utils.cpython-38.pyc
+app/models/__pycache__/analisis.cpython-38.pyc
+app/models/__pycache__/properties.cpython-38.pyc
+app/models/__pycache__/table.cpython-38.pyc
+app/models/algoritmos_predictores/__pycache__/naive_bayes.cpython-38.pyc
+app/models/tablas_analisis/__pycache__/tabla_analisis.cpython-38.pyc
+app/models/tablas_analisis/__pycache__/tabla_frecuencia.cpython-38.pyc
+app/models/tablas_analisis/__pycache__/tabla_verosimilitud.cpython-38.pyc
+app/models/__pycache__/table.cpython-38.pyc
+app/models/__pycache__/properties.cpython-38.pyc
+app/views/__pycache__/routes.cpython-38.pyc
+env/Lib/site-packages/__pycache__/_virtualenv.cpython-38.pyc
+app/__pycache__/utils.cpython-38.pyc
